@@ -143,7 +143,7 @@ class JsonSchemaParser {
     
     // Substituir Params por AdapterParams
     if (className.endsWith('Params')) {
-      className = className.substring(0, className.length - 'Params'.length) + 'AdapterParams';
+      className = '${className.substring(0, className.length - 'Params'.length)}AdapterParams';
     }
     
     return className;

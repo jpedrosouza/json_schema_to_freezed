@@ -68,7 +68,7 @@ Future<bool> _processSchemaData(dynamic jsonData, String outputPath) async {
     // Transform model names to use AdapterParams instead of Params
     for (var model in schema.models) {
       if (model.name.endsWith('Params')) {
-        model.name = model.name.substring(0, model.name.length - 'Params'.length) + 'AdapterParams';
+        model.name = '${model.name.substring(0, model.name.length - 'Params'.length)}AdapterParams';
       }
     }
     
