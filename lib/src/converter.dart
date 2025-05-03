@@ -9,7 +9,7 @@ import 'package:recase/recase.dart';
 import 'models/schema_model.dart';
 import 'parsers/json_schema_parser.dart';
 
-/// Classe principal que gerencia a conversão de schemas para classes Dart/Freezed
+/// Main class that manages the conversion of schemas to Dart/Freezed classes
 class JsonSchemaToFreezed {
   final bool freezed;
   final bool jsonSerializable;
@@ -21,7 +21,7 @@ class JsonSchemaToFreezed {
     this.headers = const {},
   });
 
-  /// Converte schema de uma URL para classes Dart/Freezed
+  /// Converts schema from a URL to Dart/Freezed classes
   Future<bool> convertFromUrl(String url, String outputPath) async {
     try {
       final response = await http.get(Uri.parse(url), headers: headers);
@@ -38,7 +38,7 @@ class JsonSchemaToFreezed {
     }
   }
 
-  /// Converte schema de um arquivo local para classes Dart/Freezed
+  /// Converts schema from a local file to Dart/Freezed classes
   Future<bool> convertFromFile(String filePath, String outputPath) async {
     try {
       final file = File(filePath);
@@ -72,7 +72,7 @@ Future<bool> _processSchemaData(dynamic jsonData, String outputPath) async {
       }
     }
     
-    // Verificar se o usuário solicitou arquivos separados
+    // Check if user requested separate files
     final generateSeparateFiles = outputPath.contains("*");
     
     if (generateSeparateFiles) {
@@ -91,27 +91,27 @@ Future<bool> _processSchemaData(dynamic jsonData, String outputPath) async {
       }
       
       for (final model in schema.models) {
-        // Obter o nome do arquivo em snake_case
+        // Get the file name in snake_case
         String fileName = ReCase(model.name).snakeCase;
         
-        // Substituir "adapter_params" por "adapter_params" no nome do arquivo para manter consistência
+        // Replace "adapter_params" with "adapter_params" in the file name for consistency
         if (fileName.endsWith('_adapter_params')) {
           fileName = '${fileName.substring(0, fileName.length - '_adapter_params'.length)}_adapter';
         } else if (fileName.endsWith('_params')) {
-          // Manter compatibilidade com código existente que pode ainda usar _params
+            // Maintain compatibility with existing code that may still use _params
           fileName = '${fileName.substring(0, fileName.length - '_params'.length)}_adapter';
         }
         
-        // Gerar o caminho do arquivo sem adicionar "generated_" como prefixo
+        // Generate the file path without adding "generated_" as a prefix
         final outputPath = outputPathTemplate.replaceAll("*", fileName);
         
         final output = File(outputPath);
         final buffer = StringBuffer();
         
-        // Adicionar imports necessários
+        // Add necessary imports
         if (freezed) {
-          buffer.writeln("// GENERATED CODE - NÃO MODIFIQUE MANUALMENTE");
-          buffer.writeln("// Gerado em: ${DateTime.now().toIso8601String()}");
+          buffer.writeln("// GENERATED CODE - DO NOT MODIFY MANUALLY");
+          buffer.writeln("// Generated on: ${DateTime.now().toIso8601String()}");
           buffer.writeln();
           buffer.writeln("import 'package:freezed_annotation/freezed_annotation.dart';");
           
@@ -132,7 +132,7 @@ Future<bool> _processSchemaData(dynamic jsonData, String outputPath) async {
           buffer.writeln();
         }
         
-        // Gerar classe para este modelo
+        // Generate class for this model
         _generateModelClass(buffer, model);
         
         await output.writeAsString(buffer.toString());
@@ -156,9 +156,9 @@ Future<bool> _processSchemaData(dynamic jsonData, String outputPath) async {
       final output = File(outputPath);
       final buffer = StringBuffer();
       
-      // Adicionar imports necessários
+      // Add necessary imports
       if (freezed) {
-        buffer.writeln("// GENERATED CODE - NÃO MODIFIQUE MANUALMENTE");
+        buffer.writeln("// GENERATED CODE - DO NOT MODIFY MANUALLY");
         buffer.writeln();
         buffer.writeln("import 'package:freezed_annotation/freezed_annotation.dart';");
         
@@ -179,7 +179,7 @@ Future<bool> _processSchemaData(dynamic jsonData, String outputPath) async {
         buffer.writeln();
       }
       
-      // Gerar classes para cada modelo no schema
+      // Generate classes for each model in the schema
       for (final model in schema.models) {
         _generateModelClass(buffer, model);
       }
@@ -220,10 +220,10 @@ Future<bool> _processSchemaData(dynamic jsonData, String outputPath) async {
       
       buffer.writeln("}");
     } else {
-      // Implementação para classes Dart regulares (não-Freezed)
+      // Implementation for regular Dart classes (non-Freezed)
       buffer.writeln("class ${model.name} {");
       
-      // Declaração de campos
+      // Field declarations
       for (final field in model.fields) {
         final dartType = _mapTypeToDart(field.type);
         final nullableMark = field.isNullable ? '?' : '';
@@ -237,7 +237,7 @@ Future<bool> _processSchemaData(dynamic jsonData, String outputPath) async {
       
       buffer.writeln();
       
-      // Construtor
+      // Constructor
       buffer.writeln("  ${model.name}({");
       for (final field in model.fields) {
         final requiredMark = field.isNullable ? '' : 'required ';

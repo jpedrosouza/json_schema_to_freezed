@@ -1,6 +1,6 @@
 import '../models/schema_model.dart';
 
-/// Parser para converter Prisma Schema em modelos internos
+/// Parser to convert Prisma Schema into internal models
 class PrismaParser {
   Future<Schema> parse(String content) async {
     final models = <Model>[];
@@ -33,12 +33,12 @@ class PrismaParser {
     final fields = <Field>[];
     int i = startIndex + 1;
     
-    // Ignorar a linha com "{"
+    // Ignore the line with "{"
     if (lines[i].trim() == '{') {
       i++;
     }
     
-    // Processar cada linha até fechar o bloco
+    // Process each line until the block is closed
     while (i < lines.length && lines[i].trim() != '}') {
       final line = lines[i].trim();
       
@@ -68,17 +68,17 @@ class PrismaParser {
     final values = <Field>[];
     int i = startIndex + 1;
     
-    // Ignorar a linha com "{"
+    // Ignore the line with "{"
     if (lines[i].trim() == '{') {
       i++;
     }
     
-    // Processar cada valor do enum
+    // Process each enum value
     while (i < lines.length && lines[i].trim() != '}') {
       final line = lines[i].trim();
       
       if (line.isNotEmpty && !line.startsWith('//')) {
-        // Remover comentários
+        // Remove comments
         final valueContent = line.split('//')[0].trim();
         if (valueContent.isNotEmpty) {
           values.add(Field(
@@ -102,12 +102,12 @@ class PrismaParser {
   }
 
   Field? _parseFieldLine(String line) {
-    // Ignorar linhas não relevantes
+    // Ignore irrelevant lines
     if (line.isEmpty || line.startsWith('//')) {
       return null;
     }
     
-    // Quebrar em nome e tipo
+    // Split into name and type
     final parts = line.split(' ');
     if (parts.length < 2) {
       return null;
@@ -116,27 +116,27 @@ class PrismaParser {
     final fieldName = parts[0].trim();
     String fieldTypePart = parts[1].trim();
     
-    // Remover qualquer coisa após o tipo (atributos, comentários)
+    // Remove anything after the type (attributes, comments)
     if (fieldTypePart.contains('@') || fieldTypePart.contains('//')) {
       fieldTypePart = fieldTypePart.split(RegExp(r'@|//'))[0].trim();
     }
     
-    // Verificar se é opcional
+    // Check if it is optional
     bool isNullable = fieldTypePart.endsWith('?');
     if (isNullable) {
       fieldTypePart = fieldTypePart.substring(0, fieldTypePart.length - 1);
     }
     
-    // Verificar se é um array
+    // Check if it is an array
     bool isArray = fieldTypePart.endsWith('[]');
     if (isArray) {
       fieldTypePart = fieldTypePart.substring(0, fieldTypePart.length - 2);
     }
     
-    // Converter tipo Prisma para tipo interno
+    // Convert Prisma type to internal type
     final fieldType = _mapPrismaTypeToFieldType(fieldTypePart);
     
-    // Ajustar se for array
+    // Adjust if it is an array
     FieldType finalType = fieldType;
     if (isArray) {
       finalType = FieldType(
@@ -170,7 +170,7 @@ class PrismaParser {
       case 'json':
         return FieldType(kind: TypeKind.map);
       default:
-        // Assumir que é uma referência a outro modelo ou enum
+        // Assume it is a reference to another model or enum
         return FieldType(
           kind: TypeKind.reference,
           reference: prismaType,

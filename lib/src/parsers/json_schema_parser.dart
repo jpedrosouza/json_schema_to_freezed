@@ -1,7 +1,7 @@
 import '../models/schema_model.dart';
 import 'package:recase/recase.dart';
 
-/// Parser para converter JSON Schema em modelos internos
+/// Parser to convert JSON Schema into internal models
 class JsonSchemaParser {
   Future<Schema> parse(dynamic jsonData) async {
     final models = <Model>[];

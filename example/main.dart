@@ -5,11 +5,11 @@ void main() async {
     jsonSerializable: true,
   );
 
-  // Exemplo de uso com URL
+  // Usage example with URL
   final urlSuccess = await converter.convertFromUrl(
     'https://example.com/api/schema-types',
     'lib/models/models_from_url.dart',
   );
   
-  print('Conversão da URL: ${urlSuccess ? 'Sucesso' : 'Falha'}');
+  print('URL conversion: ${urlSuccess ? 'Success' : 'Failed'}');
 }
