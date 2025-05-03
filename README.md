@@ -12,6 +12,7 @@ A Dart tool that converts JSON schema files to Dart classes with [Freezed](https
 - Support for field descriptions and nullable types
 - Option to generate separate files for each model
 - Watch mode for automatic regeneration when source files change
+- Fetch JSON schema from local files or APIs
 - Customizable output format and location
 
 ## Installation
@@ -28,8 +29,12 @@ dart pub add json_schema_to_freezed --dev
 
 ### Command Line
 
+You can use JSON Schema to Freezed with either local schema files or fetch schemas from an API.
+
+#### Using a Local JSON Schema File
+
 ```bash
-# Generate Freezed classes from a JSON schema file
+# Generate Freezed classes from a local JSON schema file
 json_schema_to_freezed -f schema.json -o lib/models/generated.dart
 
 # Generate regular Dart classes
@@ -42,10 +47,25 @@ json_schema_to_freezed -f schema.json -o lib/models/*.dart --separate-files
 json_schema_to_freezed -f schema.json -o lib/models/generated.dart -w
 ```
 
+#### Fetching JSON Schema from an API
+
+```bash
+# Generate Freezed classes from a JSON schema API endpoint
+json_schema_to_freezed --url https://example.com/api/json-schema?moduleType=contact --output lib/models/generated.dart
+
+# With authentication headers
+json_schema_to_freezed --url https://example.com/api/json-schema?moduleType=contact --header "token:123" --output lib/models/gen.dart --separate-files
+
+# Multiple headers can be passed
+json_schema_to_freezed --url https://example.com/api/json-schema --header "token:123" --header "Content-Type:application/json" --output lib/models/gen.dart
+```
+
 ### Command Line Options
 
 ```
 -f, --file          Path to the JSON schema file
+    --url           URL to fetch JSON schema from an API
+-H, --header        HTTP headers for API requests (format: "key:value")
 -o, --output        Path to the generated Dart file or directory pattern
 -s, --separate-files  Generate separate files for each model
 -w, --watch         Watch for changes in the source file (file mode only)
@@ -59,69 +79,120 @@ json_schema_to_freezed -f schema.json -o lib/models/generated.dart -w
 
 ### Input JSON Schema
 
+JSON schemas can contain multiple model definitions. Here's an example of a JSON schema with multiple models:
+
 ```json
 {
-  "version": "1.0.0",
-  "models": [
-    {
-      "name": "User",
-      "description": "A user in the system",
-      "fields": [
-        {
-          "name": "id",
-          "type": "string",
-          "description": "Unique identifier for the user"
+    "CreateContactParams": {
+        "schema": {
+            "type": "object",
+            "properties": {
+                "title": {
+                    "type": "string"
+                },
+                "phone": {
+                    "type": "string"
+                }
+            },
+            "additionalProperties": false,
+            "propertyOrder": [
+                "title",
+                "phone"
+            ],
+            "required": [
+                "phone",
+                "title"
+            ],
+            "$schema": "http://json-schema.org/draft-07/schema#"
         },
-        {
-          "name": "email",
-          "type": "string",
-          "description": "User's email address"
+        "description": ""
+    },
+    "ShowContactByIdParams": {
+        "schema": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "string"
+                }
+            },
+            "additionalProperties": false,
+            "propertyOrder": [
+                "id"
+            ],
+            "required": [
+                "id"
+            ],
+            "$schema": "http://json-schema.org/draft-07/schema#"
         },
-        {
-          "name": "age",
-          "type": "integer",
-          "isNullable": true,
-          "description": "User's age (optional)"
+        "description": ""
+    },
+    "UpdateContactParams": {
+        "schema": {
+            "additionalProperties": false,
+            "type": "object",
+            "properties": {
+                "title": {
+                    "type": "string"
+                },
+                "phone": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                }
+            },
+            "required": [
+                "id"
+            ],
+            "$schema": "http://json-schema.org/draft-07/schema#"
         },
-        {
-          "name": "createdAt",
-          "type": "string",
-          "description": "Account creation timestamp"
-        }
-      ]
+        "description": ""
+    },
+    "DeleteContactParams": {
+        "schema": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "string"
+                }
+            },
+            "additionalProperties": false,
+            "propertyOrder": [
+                "id"
+            ],
+            "required": [
+                "id"
+            ],
+            "$schema": "http://json-schema.org/draft-07/schema#"
+        },
+        "description": ""
     }
-  ]
 }
 ```
 
-### Generated Freezed Class
+### Generated Freezed Classes
+
+When using the `--separate-files` option, the tool will generate separate files for each model. For example:
 
 ```dart
+// create_contact_params.dart
 // GENERATED CODE - DO NOT MODIFY MANUALLY
 
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:json_annotation/json_annotation.dart';
-import 'dart:convert';
 
-part 'generated.freezed.dart';
-part 'generated.g.dart';
+part 'create_contact_params.freezed.dart';
+part 'create_contact_params.g.dart';
 
-/// A user in the system
 @freezed
-class User with _$User {
-  const factory User({
-    /// Unique identifier for the user
-    required String id,
-    /// User's email address
-    required String email,
-    /// User's age (optional)
-    int? age,
-    /// Account creation timestamp
-    required String createdAt,
-  }) = _User;
+class CreateContactParams with _$CreateContactParams {
+  const factory CreateContactParams({
+    required String title,
+    required String phone,
+  }) = _CreateContactParams;
 
-  factory User.fromJson(Map<String, dynamic> json) =>
-      _$UserFromJson(json);
+  factory CreateContactParams.fromJson(Map<String, dynamic> json) =>
+      _$CreateContactParamsFromJson(json);
 }
 ```
 
