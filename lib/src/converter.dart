@@ -65,6 +65,13 @@ Future<bool> _processSchemaData(dynamic jsonData, String outputPath) async {
     final parser = JsonSchemaParser();
     final schema = await parser.parse(jsonData);
     
+    // Transform model names to use AdapterParams instead of Params
+    for (var model in schema.models) {
+      if (model.name.endsWith('Params')) {
+        model.name = model.name.substring(0, model.name.length - 'Params'.length) + 'AdapterParams';
+      }
+    }
+    
     // Verificar se o usuário solicitou arquivos separados
     final generateSeparateFiles = outputPath.contains("*");
     
@@ -84,7 +91,18 @@ Future<bool> _processSchemaData(dynamic jsonData, String outputPath) async {
       }
       
       for (final model in schema.models) {
-        final fileName = ReCase(model.name).snakeCase;
+        // Obter o nome do arquivo em snake_case
+        String fileName = ReCase(model.name).snakeCase;
+        
+        // Substituir "adapter_params" por "adapter_params" no nome do arquivo para manter consistência
+        if (fileName.endsWith('_adapter_params')) {
+          fileName = '${fileName.substring(0, fileName.length - '_adapter_params'.length)}_adapter';
+        } else if (fileName.endsWith('_params')) {
+          // Manter compatibilidade com código existente que pode ainda usar _params
+          fileName = '${fileName.substring(0, fileName.length - '_params'.length)}_adapter';
+        }
+        
+        // Gerar o caminho do arquivo sem adicionar "generated_" como prefixo
         final outputPath = outputPathTemplate.replaceAll("*", fileName);
         
         final output = File(outputPath);

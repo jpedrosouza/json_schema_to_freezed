@@ -13,7 +13,7 @@ class Schema {
 
 /// Represents a model or entity in the schema
 class Model {
-  final String name;
+  String name;  // Changed from final to allow modification
   final List<Field> fields;
   final String? description;
   final bool isEnum;

@@ -139,6 +139,13 @@ class JsonSchemaParser {
   String _formatClassName(String name) {
     // Usar recase para formatação consistente
     ReCase rc = ReCase(name);
-    return rc.pascalCase;
+    String className = rc.pascalCase;
+    
+    // Substituir Params por AdapterParams
+    if (className.endsWith('Params')) {
+      className = className.substring(0, className.length - 'Params'.length) + 'AdapterParams';
+    }
+    
+    return className;
   }
 }
