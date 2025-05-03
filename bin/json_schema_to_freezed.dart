@@ -88,7 +88,7 @@ void main(List<String> arguments) async {
       final dir = path.dirname(output);
       final extension = path.extension(output);
       final basename = path.basenameWithoutExtension(output);
-      output = path.join(dir, basename + '_*' + extension);
+      output = path.join(dir, '${basename}_*$extension');
     }
 
     bool success;
