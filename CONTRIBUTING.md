@@ -25,7 +25,23 @@ dart pub get
 # Run tests
 dart test
 ```
+### Running the Local Development Version
 
+```bash
+dart run bin/json_schema_to_freezed.dart ...parameters...
+```
+
+### Activating the Local Development Version 
+
+If you prefer to use the command directly in your terminal (just like an 
+end-user would), you can "globally activate" your local version. This links the command name to your local project directory instead of the version on . `json_schema_to_freezed``pub.dev`
+Run the following command from the root of your project directory:
+
+
+```bash
+cd <to the root of the project>
+dart pub global activate --source path .
+```
 ## Guidelines
 
 - Follow the [Dart style guide](https://dart.dev/guides/language/effective-dart/style).
@@ -37,7 +53,7 @@ dart test
 
 1. Ensure your code passes all tests.
 2. Update documentation if needed.
-3. Update the CHANGELOG.md with details of changes.
+3. Update the CHANGELOG.md with details of your changes.
 4. Your pull request will be merged once it is reviewed and approved.
 
 ## Feature Requests and Bug Reports
