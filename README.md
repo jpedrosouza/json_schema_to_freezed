@@ -31,48 +31,66 @@ dart pub add json_schema_to_freezed --dev
 
 You can use JSON Schema to Freezed with either local schema files or fetch schemas from an API.
 
+- DART now recommends the use of `dart run` for running globally activated 
+packages. 
+
 #### Using a Local JSON Schema File
 
 ```bash
 # Generate Freezed classes from a local JSON schema file
-json_schema_to_freezed -f schema.json -o lib/models/generated.dart
+dart run json_schema_to_freezed -f schema.json -o lib/models/generated.dart
 
 # Generate regular Dart classes
-json_schema_to_freezed -f schema.json -o lib/models/generated.dart --no-freezed
+dart run json_schema_to_freezed -f schema.json -o lib/models/generated.dart 
+--no-freezed
 
 # Generate separate files for each model
-json_schema_to_freezed -f schema.json -o lib/models/*.dart --separate-files
+dart run json_schema_to_freezed -f schema.json -o lib/models/*.dart 
+--separate-files
 
 # Watch for changes in the source file
-json_schema_to_freezed -f schema.json -o lib/models/generated.dart -w
+dart run json_schema_to_freezed -f schema.json -o lib/models/generated.dart -w
 ```
 
 #### Fetching JSON Schema from an API
 
 ```bash
 # Generate Freezed classes from a JSON schema API endpoint
-json_schema_to_freezed --url https://example.com/api/json-schema?moduleType=contact --output lib/models/generated.dart
+dart run json_schema_to_freezed --url https://example.com/api/json-schema?
+moduleType=contact --output lib/models/generated.dart
 
 # With authentication headers
-json_schema_to_freezed --url https://example.com/api/json-schema?moduleType=contact --header "token:123" --output lib/models/gen.dart --separate-files
+dart run json_schema_to_freezed --url https://example.com/api/json-schema?
+moduleType=contact --header "token:123" --output lib/models/gen.dart --separate-files
 
 # Multiple headers can be passed
-json_schema_to_freezed --url https://example.com/api/json-schema --header "token:123" --header "Content-Type:application/json" --output lib/models/gen.dart
+dart run json_schema_to_freezed --url https://example.com/api/json-schema 
+--header "token:123" --header "Content-Type:application/json" --output lib/models/gen.dart
 ```
 
 ### Command Line Options
 
 ```
--f, --file          Path to the JSON schema file
-    --url           URL to fetch JSON schema from an API
--H, --header        HTTP headers for API requests (format: "key:value")
--o, --output        Path to the generated Dart file or directory pattern
--s, --separate-files  Generate separate files for each model
--w, --watch         Watch for changes in the source file (file mode only)
--h, --help          Show this help menu
--c, --config        Path to a custom configuration file
-    --[no-]freezed  Generate Freezed classes (default) or regular Dart classes
-    --[no-]json-serializable  Add json_serializable support for JSON serialization
+Options:
+-u, --url                       URL of the endpoint returning the JSON schema
+-f, --file                      Path to a local JSON schema file (.json)
+-o, --output                    Output file path for the generated classes
+                                (defaults to "lib/models/generated_models.dart")
+-H, --header                    HTTP headers for URL requests in the format "key:value"
+-s, --[no-]separate-files       Generate a separate file for each model
+-w, --[no-]watch                Watch for changes in the source file (file mode only)
+-h, --help                      Show this help menu
+-c, --config                    Path to a custom configuration file
+    --[no-]freezed              Generate Freezed classes (default) or regular Dart classes
+                                (defaults to on)
+    --[no-]json-serializable    Add json_serializable support for JSON serialization
+                                (defaults to on)
+    --[no-]camel-case           Convert snake-case to camel-case and add @JsonKey()
+                                (defaults to on)
+    --[no-]abstract             Declare freezed class as abstract (v3 requirement)
+                                (defaults to on)
+    --[no-]use-dollar-id        Parse $id as the root class name instead of creating a "Root" class.
+                                (defaults to on)
 ```
 
 ## Example
