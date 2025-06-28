@@ -1,10 +1,10 @@
 name: json_schema_to_freezed
 description: Convert JSON schema files to Dart classes with Freezed or regular Dart classes with JSON serialization support.
 version: 1.0.1
-repository: https://github.com/joaopedrosouza/json_schema_to_freezed
-homepage: https://github.com/joaopedrosouza/json_schema_to_freezed
-documentation: https://github.com/joaopedrosouza/json_schema_to_freezed/blob/main/README.md
-issue_tracker: https://github.com/joaopedrosouza/json_schema_to_freezed/issues
+repository: https://github.com/jpedrosouza/json_schema_to_freezed
+homepage: https://github.com/jpedrosouza/json_schema_to_freezed
+documentation: https://github.com/jpedrosouza/json_schema_to_freezed/blob/main/README.md
+issue_tracker: https://github.com/jpedrosouza/json_schema_to_freezed/issues
 
 environment:
   sdk: ^3.7.2
