@@ -3,29 +3,29 @@ import 'package:recase/recase.dart';
 
 /// Parser to convert JSON Schema into internal models
 class JsonSchemaParser {
-  Future<Schema> parse(dynamic jsonData) async {
+  Future<Schema> parse(dynamic jsonData, bool useClassId) async {
     final models = <Model>[];
     
-    // Verificar se estamos lidando com um objeto raiz que contém vários modelos
+    // Check if we are dealing with a root object that contains multiple models
     if (jsonData is Map<String, dynamic>) {
-      // Iterar por cada entrada no objeto principal
+      // Iterate through each entry in the main object
       jsonData.forEach((modelName, modelData) {
-        // Verificar se o modelo tem o formato esperado (com 'schema' e 'description')
+        // Check if the model has the expected format (with 'schema' and 'description')
         if (modelData is Map<String, dynamic> && modelData.containsKey('schema')) {
           final schema = modelData['schema'] as Map<String, dynamic>;
           final description = modelData['description'] as String?;
-          
-          // Extrair propriedades do schema
+
+          // Extract properties from the schema
           if (schema.containsKey('properties')) {
             final model = _parseModel(modelName, schema, description);
             models.add(model);
           }
         } else if (modelData is Map<String, dynamic> && modelData.containsKey('properties')) {
-          // Formato alternativo onde o schema está diretamente no objeto
+          // Alternative format where the schema is directly in the object
           final model = _parseModel(modelName, modelData);
           models.add(model);
         } else if (modelData is Map<String, dynamic> && modelData.containsKey('definitions')) {
-          // Formato com 'definitions'
+          // Format with 'definitions'
           final definitions = modelData['definitions'] as Map<String, dynamic>;
           definitions.forEach((defName, defValue) {
             models.add(_parseModel('${modelName}_$defName', defValue));
@@ -34,9 +34,11 @@ class JsonSchemaParser {
       });
     }
     
-    // Se não encontrou modelos, tente como um único schema
+    // If no models were found, try as a single schema
     if (models.isEmpty && jsonData is Map<String, dynamic> && jsonData.containsKey('properties')) {
-      models.add(_parseModel('Root', jsonData));
+      final classId = useClassId ? jsonData['\$id'] as String : null;
+      final String modelName = classId ?? 'Root';
+      models.add(_parseModel(modelName, jsonData));
     }
     
     return Schema(
@@ -54,25 +56,25 @@ class JsonSchemaParser {
           ? (modelData['required'] as List).cast<String>()
           : <String>[];
       
-      // Verificar se existe uma ordenação de propriedades
+      // Check if there is a property ordering
       List<String>? propertyOrder;
       if (modelData.containsKey('propertyOrder') && modelData['propertyOrder'] is List) {
         propertyOrder = (modelData['propertyOrder'] as List).cast<String>();
       }
-      
-      // Lista de propriedades ordenadas, se possível
+
+      // List of ordered properties, if possible
       final orderedProps = propertyOrder != null
           ? [...propertyOrder]
           : properties.keys.toList();
-          
-      // Adicionar propriedades que não estão na ordem, mas existem
+
+      // Add properties that are not in the order but exist
       for (final key in properties.keys) {
         if (!orderedProps.contains(key)) {
           orderedProps.add(key);
         }
       }
-      
-      // Processar as propriedades na ordem correta
+
+      // Process properties in the correct order
       for (final propName in orderedProps) {
         if (properties.containsKey(propName)) {
           fields.add(_parseField(
@@ -137,11 +139,11 @@ class JsonSchemaParser {
   }
 
   String _formatClassName(String name) {
-    // Usar recase para formatação consistente
+    // Use recase for consistent formatting
     ReCase rc = ReCase(name);
     String className = rc.pascalCase;
-    
-    // Substituir Params por AdapterParams
+
+    // Replace Params with AdapterParams
     if (className.endsWith('Params')) {
       className = '${className.substring(0, className.length - 'Params'.length)}AdapterParams';
     }

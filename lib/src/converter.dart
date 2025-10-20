@@ -14,11 +14,19 @@ class JsonSchemaToFreezed {
   final bool freezed;
   final bool jsonSerializable;
   final Map<String, String> headers;
+  final bool camelCase;
+  final bool declareAbstract;
+  final bool useId;
+  final bool useDollarId;
 
   JsonSchemaToFreezed({
     this.freezed = true,
     this.jsonSerializable = true,
     this.headers = const {},
+    this.camelCase = true,
+    this.declareAbstract = true,
+    this.useId = true,
+    this.useDollarId = true,
   });
 
   /// Converts schema from a URL to Dart/Freezed classes
@@ -63,7 +71,7 @@ class JsonSchemaToFreezed {
 
 Future<bool> _processSchemaData(dynamic jsonData, String outputPath) async {
     final parser = JsonSchemaParser();
-    final schema = await parser.parse(jsonData);
+    final schema = await parser.parse(jsonData, useDollarId);
     
     // Transform model names to use AdapterParams instead of Params
     for (var model in schema.models) {
@@ -194,8 +202,10 @@ Future<bool> _processSchemaData(dynamic jsonData, String outputPath) async {
 
   void _generateModelClass(StringBuffer buffer, Model model) {
     if (freezed) {
+      // V3 Freezed requires "abstract class"
+      final classHeader = declareAbstract ? "abstract class" : "class";
       buffer.writeln("@freezed");
-      buffer.writeln("class ${model.name} with _\$${model.name} {");
+      buffer.writeln("$classHeader ${model.name} with _\$${model.name} {");
       buffer.writeln("  const factory ${model.name}({");
       
       for (final field in model.fields) {
@@ -206,10 +216,23 @@ Future<bool> _processSchemaData(dynamic jsonData, String outputPath) async {
         if (field.description != null && field.description!.isNotEmpty) {
           buffer.writeln("    /// ${field.description}");
         }
-        
-        buffer.writeln("    $requiredMark$dartType$nullableMark ${field.name},");
+
+        // DART prefers the camel Case variables instead of snake case.
+        final fieldName = field.name;
+        final camelCaseName = ReCase(fieldName).camelCase;
+        final usesCamelCase = fieldName == camelCaseName;
+
+        if (!usesCamelCase && camelCase) {
+          var required = "";
+          if (requiredMark == "required ") {
+            required=", required: true";
+          }
+          buffer.writeln("    @JsonKey(name: '${field.name}'$required)");
+        }
+          buffer.writeln(
+              "    $requiredMark$dartType$nullableMark $camelCaseName,");
       }
-      
+
       buffer.writeln("  }) = _${model.name};");
       buffer.writeln();
       
@@ -232,16 +255,24 @@ Future<bool> _processSchemaData(dynamic jsonData, String outputPath) async {
           buffer.writeln("  /// ${field.description}");
         }
         
-        buffer.writeln("  final $dartType$nullableMark ${field.name};");
+        final fieldName = field.name;
+        final camelCaseName = ReCase(fieldName).camelCase;
+        final usesCamelCase = fieldName == camelCaseName;
+
+        if (!usesCamelCase) {
+          buffer.writeln("  @JsonKey(name: '${field.name}')");
+        }
+        buffer.writeln("  final $dartType$nullableMark $camelCaseName;");
       }
-      
+
       buffer.writeln();
       
       // Constructor
       buffer.writeln("  ${model.name}({");
       for (final field in model.fields) {
         final requiredMark = field.isNullable ? '' : 'required ';
-        buffer.writeln("    ${requiredMark}this.${field.name},");
+        final camelCaseName = ReCase(field.name).camelCase;
+        buffer.writeln("    ${requiredMark}this.$camelCaseName,");
       }
       buffer.writeln("  });");
       
@@ -252,7 +283,9 @@ Future<bool> _processSchemaData(dynamic jsonData, String outputPath) async {
         buffer.writeln("    return ${model.name}(");
         for (final field in model.fields) {
           final castOp = _getCastOperation(field.type, field.isNullable);
-          buffer.writeln("      ${field.name}: ${castOp("json['${field.name}']")},");
+          final camelCaseName = ReCase(field.name).camelCase;
+          buffer.writeln(
+              "      $camelCaseName: ${castOp("json['${field.name}']")},");
         }
         buffer.writeln("    );");
         buffer.writeln("  }");
@@ -262,7 +295,9 @@ Future<bool> _processSchemaData(dynamic jsonData, String outputPath) async {
         buffer.writeln("  Map<String, dynamic> toJson() {");
         buffer.writeln("    return {");
         for (final field in model.fields) {
-          buffer.writeln("      '${field.name}': ${field.name},");
+          final fieldName = field.name;
+          final camelCaseName = ReCase(fieldName).camelCase;
+          buffer.writeln("      '$fieldName': $camelCaseName,");
         }
         buffer.writeln("    };");
         buffer.writeln("  }");

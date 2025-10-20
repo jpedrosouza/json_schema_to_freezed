@@ -34,7 +34,18 @@ void main(List<String> arguments) async {
         help: 'Generate Freezed classes (default) or regular Dart classes')
     ..addFlag('json-serializable',
         defaultsTo: true,
-        help: 'Add json_serializable support for JSON serialization');
+        help: 'Add json_serializable support for JSON serialization')
+    ..addFlag('camel-case',
+      defaultsTo: true,
+      help: 'Convert snake-case to camel-case and add @JsonKey()')
+    ..addFlag('abstract',
+        defaultsTo: true,
+        help: 'Declare freezed class as abstract (v3 requirement)')
+    ..addFlag('use-dollar-id',
+        defaultsTo: true,
+        help: 'Parse \$id as the root class name instead of creating a "Root"'
+            ' class.');
+
 
   try {
     final results = parser.parse(arguments);
@@ -47,7 +58,7 @@ void main(List<String> arguments) async {
     // Parse headers
     final List<String> headerStrings = results['header'] as List<String>;
     final Map<String, String> headers = {};
-    
+
     for (final headerString in headerStrings) {
       final parts = headerString.split(':');
       if (parts.length >= 2) {
@@ -64,6 +75,9 @@ void main(List<String> arguments) async {
       freezed: results['freezed'] as bool,
       jsonSerializable: results['json-serializable'] as bool,
       headers: headers,
+      camelCase: results['camel-case'],
+      declareAbstract: results['abstract'],
+      useDollarId: results['use-dollar-id'],
     );
 
     final String? url = results['url'] as String?;
@@ -98,7 +112,7 @@ void main(List<String> arguments) async {
     } else {
       print('🔄 Converting schema from file: $file');
       success = await converter.convertFromFile(file!, output);
-      
+
       if (success && watch) {
         print('👀 Watching for changes in $file...');
         File(file).watch().listen((_) async {

@@ -5,42 +5,36 @@ import 'package:path/path.dart' as path;
 void main() async {
   // Create a simple schema for demonstration
   final schemaJson = '''
-  {
-    "version": "1.0.0",
-    "models": [
       {
-        "name": "Product",
+        "\$schema": "https://json-schema.org/draft/2020-12/schema",
+        "\$id": "Product",
+        "title": "Product",
         "description": "A product in the catalog",
-        "fields": [
-          {
-            "name": "id",
+        "type": "object",
+        "properties": {
+          "id": {
             "type": "string",
             "description": "Unique identifier for the product"
           },
-          {
-            "name": "name",
+          "name": {
             "type": "string",
             "description": "Product name"
           },
-          {
-            "name": "price",
+          "price": {
             "type": "number",
             "description": "Product price"
           },
-          {
-            "name": "tags",
+          "tags": {
             "type": "array",
             "items": {
               "type": "string"
             },
-            "isNullable": true,
             "description": "Optional product tags"
           }
-        ]
+        },
+        "required": ["id", "name", "price"]
       }
-    ]
-  }
-  ''';
+      ''';
 
   // Save schema to a temporary file
   final tempDir = Directory.systemTemp;

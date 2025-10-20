@@ -1,5 +1,15 @@
 # Changelog
 
+# 1.0.2
+
+* New Features Added
+  * Freezed 3 support added, classes will now be `abstract`,
+  * Snake case to Camel Case conversion added. On by default, 
+  * Updated the JSON schema examples and test code for the latest specification,
+  * Updated documentation to align with new DART recommendations,
+  * Added more unit tests, specifically to convert TypeScript zod/v4 JSON 
+    Schema outputs.
+
 ## 1.0.1
 
 * Documentation improvements in README.md:

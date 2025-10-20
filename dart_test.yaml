@@ -1,0 +1,15 @@
+# Test timeout configuration
+timeout: 10m
+
+# Additional test settings
+test_on: vm
+
+# Output test results in verbose mode
+verbose: true
+
+# Retry failed tests up to this number of times
+retry: 2
+
+# When debugging, consider setting these:
+# pause_after_load: true
+# concurrency: 1

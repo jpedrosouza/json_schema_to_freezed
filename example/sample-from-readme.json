@@ -1,0 +1,87 @@
+
+{
+  "CreateContactParams": {
+    "schema": {
+      "type": "object",
+      "properties": {
+        "title": {
+          "type": "string"
+        },
+        "phone": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false,
+      "propertyOrder": [
+        "title",
+        "phone"
+      ],
+      "required": [
+        "phone",
+        "title"
+      ],
+      "$schema": "http://json-schema.org/draft-07/schema#"
+    },
+    "description": ""
+  },
+  "ShowContactByIdParams": {
+    "schema": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false,
+      "propertyOrder": [
+        "id"
+      ],
+      "required": [
+        "id"
+      ],
+      "$schema": "http://json-schema.org/draft-07/schema#"
+    },
+    "description": ""
+  },
+  "UpdateContactParams": {
+    "schema": {
+      "additionalProperties": false,
+      "type": "object",
+      "properties": {
+        "title": {
+          "type": "string"
+        },
+        "phone": {
+          "type": "string"
+        },
+        "id": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "id"
+      ],
+      "$schema": "http://json-schema.org/draft-07/schema#"
+    },
+    "description": ""
+  },
+  "DeleteContactParams": {
+    "schema": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false,
+      "propertyOrder": [
+        "id"
+      ],
+      "required": [
+        "id"
+      ],
+      "$schema": "http://json-schema.org/draft-07/schema#"
+    },
+    "description": ""
+  }
+}
