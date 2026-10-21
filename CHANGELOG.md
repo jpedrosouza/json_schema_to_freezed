@@ -1,6 +1,6 @@
 # Changelog
 
-# 1.0.2
+## 1.0.2
 
 * New Features Added
   * Freezed 3 support added, classes will now be `abstract`,
