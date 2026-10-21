@@ -58,7 +58,7 @@ dart pub global activate --source path .
 
 ## Feature Requests and Bug Reports
 
-Please submit issues through the [issue tracker](https://github.com/joaopedrosouza/json_schema_to_freezed/issues).
+Please submit issues through the [issue tracker](https://github.com/jpedrosouza/json_schema_to_freezed/issues).
 
 ## License
 
